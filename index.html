@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إلى أميرتي شهد - من قلب محمد</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Reem+Kufi:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root { --pink: #ff85a1; --red: #c9184a; --bg: #fff0f3; --dark-red: #800f2f; }
+        body, html { margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; background-color: var(--bg); color: #333; overflow-x: hidden; scroll-behavior: smooth; }
+
+        /* شاشة قفل الخزنة - Rolling Numbers */
+        #lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #ffb3c1, #fb6f92); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9000; }
+        .vault-container { background: #fff; padding: 30px; border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; border: 4px solid var(--pink); }
+        .vault-container h2 { color: var(--red); font-family: 'Reem Kufi'; margin-bottom: 20px; }
+        .rollers { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .roller-box { width: 60px; height: 100px; overflow-y: scroll; scroll-snap-type: y mandatory; border: 2px solid var(--pink); border-radius: 10px; background: #fdfdfd; -ms-overflow-style: none; scrollbar-width: none; }
+        .roller-box::-webkit-scrollbar { display: none; }
+        .number { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; color: var(--red); scroll-snap-align: center; }
+        .unlock-btn { background: var(--red); color: white; border: none; padding: 15px 50px; border-radius: 30px; cursor: pointer; font-size: 1.2rem; font-weight: bold; }
+
+        /* المحتوى الرئيسي */
+        #main-content { display: none; }
+        header { text-align: center; padding: 50px 20px; background: white; border-radius: 0 0 50px 50px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .names-title { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: var(--red); margin: 0; }
+
+        /* تنسيق الصور والجمل */
+        .content-section { padding: 40px 20px; max-width: 1200px; margin: auto; }
+        .outer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 50px; }
+        .image-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 2px solid var(--pink); position: relative; }
+        .image-card img { width: 100%; height: 350px; object-fit: cover; }
+        .image-card .caption { padding: 15px; text-align: center; font-weight: bold; color: var(--red); }
+
+        /* الزرار السحري والمحتوى المخفي */
+        .magic-trigger { display: block; margin: 40px auto; background: var(--red); color: white; border: none; padding: 20px 60px; border-radius: 50px; font-size: 1.5rem; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(201, 24, 74, 0.3); }
+        #hidden-surprise { display: none; background: #fff; border-radius: 30px; padding: 40px; margin: 20px; border: 3px dashed var(--pink); }
+        .surprise-flex { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+        .inner-images { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .inner-images img { width: 250px; height: 320px; object-fit: cover; border-radius: 15px; border: 4px solid var(--pink); }
+        .long-message { font-size: 1.3rem; line-height: 2.2; color: #444; text-align: justify; max-width: 800px; background: #fff5f7; padding: 30px; border-radius: 20px; position: relative; }
+
+        /* فيديوهات */
+        .video-box { width: 90%; max-width: 600px; margin: 30px auto; border: 10px solid white; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        video { width: 100%; display: block; }
+
+/* زر الفضاء والقلوب المتساقطة */
+        .space-btn { display: block; margin: 40px auto 60px; background: #111; color: white; border: 2px solid var(--pink); padding: 16px 40px; border-radius: 40px; font-size: 1.2rem; font-family: inherit; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .falling-element { position: fixed; top: -50px; z-index: 9999; pointer-events: none; opacity: 0.4; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(105vh) rotate(360deg); } }
+
+        /* الفضاء */
+        #space-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; }
+        .back-btn { position: absolute; top: 20px; right: 20px; color: white; border: 1px solid white; padding: 10px; cursor: pointer; background: none; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="lock-screen">
+        <div class="vault-container">
+            <h2>خزنة حب شهد 🔐</h2>
+            <p>( اختاري الرقم السري )</p>
+            <div class="rollers">
+                <div class="roller-box" id="r1"><div class="number">0</div><div class="number">1</div><div class="number">2</div><div class="number">3</div><div class="number">4</div><div class="number">5</div><div class="number">6</div><div class="number">7</div><div class="number">8</div><div class="number">9</div></div>
+                <div class="roller-box" id="r2"><div class="number">0</div><div class="number">1</div><div class="number">2</div><div class="number">3</div><div class="number">4</div><div class="number">5</div><div class="number">6</div><div class="number">7</div><div class="number">8</div><div class="number">9</div></div>
+                <div class="roller-box" id="r3"><div class="number">0</div><div class="number">1</div><div class="number">2</div><div class="number">3</div><div class="number">4</div><div class="number">5</div><div class="number">6</div><div class="number">7</div><div class="number">8</div><div class="number">9</div></div>
+            </div>
+            <button class="unlock-btn" onclick="tryUnlock()">افتحي قلبي ❤️</button>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <header>
+            <h1 class="names-title">Mohamed ❤️ Shahd</h1>
+            <p style="color: var(--red); font-weight: bold;">أنتِ أجمل حكاية بدأت في أيامي</p>
+        </header>
+
+        <div class="content-section">
+            <div class="outer-grid">
+                <div class="image-card">
+                    <img src="img1.png">
+                    <div class="caption" >أحلى ابتسامة في الدنيا 🤭❤️🥹</div>
+                </div>
+                <div class="image-card"><img src="img2.png"><div class="caption">اي الجمال ده 🥰</div></div>
+                <div class="image-card"><img src="img3.png"><div class="caption">أجمل إحساس وأنا معاكي يا شهد🥹❤️</div></div>
+                <div class="image-card"><img src="img4.png"><div class="caption">كل لحظة معاكي حلوة 😘❤️</div></div>
+            </div>
+
+            <div class="video-box">
+                <video id="v1" controls onplay="stopAllExcept('v1')"><source src="video.mp4" type="video/mp4"></video>
+            </div>
+
+            <button class="magic-trigger" onclick="openMagic()">افتحي هنا يا حبيبتي.. فيه مفاجأة 😉</button>
+
+<div id="hidden-surprise">
+                <div class="surprise-flex">
+                    <div class="inner-images">
+                        <img src="img5.png">
+                        <img src="img6.png">
+                        <img src="img7.png">                                                             <img src="img8.png">
+                    </div>
+                    <div class="long-message">
+                        يا شهد.. أنا مش بعرف أقول كلام كتير، بس عايزك تعرفي إنك دخلتي حياتي بهدوء وبسرعة، وبقيتي أحلى حاجة في يومي. لسه معرفتنا جديدة، بس من أول يوم حسيت إن اللي بينا حاجة مختلفة وصادقة. بحب ضحكتك، وبحب هدوءك، وبحب إني جنبك بكون نسخة أحسن من نفسي. بوعدك أبقى دايمًا في ضهرك، وأحافظ عليكي وعلى اللي بينا خطوة بخطوة. مش عايز من الدنيا غير إننا نكمل مع بعض ونعمل ذكريات حلوة كتير. ربنا يخليكي ليا يا شهد، وأنا بحبك. ❤️❤️❤️
+                    </div>
+                </div>
+                <div class="video-box">
+                    <video id="v2" controls onplay="stopAllExcept('v2')"><source src="https://files.catbox.moe/aifxfz.mp4" type="video/mp4"></video>
+                </div>
+            </div>
+
+            <button class="space-btn" onclick="startSpace()">دخول الفضاء 🌌</button>
+        </div>
+    </div>
+
+    <div id="space-container">
+        <button class="back-btn" onclick="goBack()">رجوع لقلبي ↩️</button>
+        <canvas id="spaceCanvas"></canvas>
+    </div>
+
+    <audio id="song_main1" loop src="https://files.catbox.moe/zrqgx9.mp3"></audio>
+    <audio id="song_main2" loop src="رابط_أغنية_بره_2"></audio>
+    <audio id="song_magic" loop src="https://files.catbox.moe/48hvxz.mp3"></audio>
+    <audio id="song_space" loop src="https://files.catbox.moe/5in53q.mp3"></audio>
+
+    <script>
+        const v1 = document.getElementById('v1');
+        const v2 = document.getElementById('v2');
+        const sm1 = document.getElementById('song_main1');
+        const sm2 = document.getElementById('song_main2');
+        const sMagic = document.getElementById('song_magic');
+        const sSpace = document.getElementById('song_space');
+        const allMedia = [v1, v2, sm1, sm2, sMagic, sSpace];
+
+        function stopAllExcept(id) {
+            allMedia.forEach(m => { if(m.id !== id) { m.pause(); } });
+        }
+
+        function tryUnlock() {
+            const num1 = Math.round(document.getElementById('r1').scrollTop / 100);
+            const num2 = Math.round(document.getElementById('r2').scrollTop / 100);
+            const num3 = Math.round(document.getElementById('r3').scrollTop / 100);
+            
+            if(num1 === 0 && num2 === 1 && num3 === 4) {
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                createFalling();
+                sm1.play(); // تشغيل الأغنية الأولى بره أوتوماتيك
+            } else {
+                alert("الرقم غلط يا روحي ركزي 😉");
+            }
+        }
+
+        function openMagic() {
+            document.getElementById('hidden-surprise').style.display = 'block';
+            stopAllExcept('song_magic');
+            sMagic.play(); // تشغيل أغنية الزرار السحري
+            window.scrollTo(0, document.getElementById('hidden-surprise').offsetTop - 50);
+        }
+
+        function createFalling() {
+            const items = ['⭐️', '❤️', '🫧'];
+            setInterval(() => {
+                const el = document.createElement('div');
+                el.className = 'falling-element';
+                el.innerText = items[Math.floor(Math.random()*items.length)];
+                el.style.left = Math.random() * window.innerWidth + 'px';
+                el.style.fontSize = (Math.random()*20 + 10) + 'px';
+                el.style.animationDuration = (Math.random()*3 + 4) + 's';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 5000);
+            }, 500);
+        }
+
+// الفضاء
+        function startSpace() {
+            stopAllExcept('song_space');
+            sSpace.play();
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('space-container').style.display = 'block';
+            initSpace();
+        }
+
+        function goBack() {
+            document.getElementById('space-container').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            stopAllExcept('song_main1');
+            sm1.play();
+        }
+
+        function initSpace() {
+            const canvas = document.getElementById('spaceCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            let particles = [];
+            let currentText = 0;
+            const sequence = ["حبيبتي شهد", "بحبك", "بموت فيكي", "يا شهودتي"];
+
+            for(let i=0; i<2000; i++) {
+                particles.push({
+                    x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+                    destX: 0, destY: 0, size: Math.random()*2
+                });
+            }
+
+            function setShape(text) {
+                ctx.clearRect(0,0,canvas.width, canvas.height);
+                ctx.fillStyle = "white"; ctx.font = "bold 60px Tajawal"; ctx.textAlign = "center";
+                ctx.fillText(text, canvas.width/2, canvas.height/2);
+                const data = ctx.getImageData(0,0,canvas.width, canvas.height).data;
+                let points = [];
+                for(let i=0; i<data.length; i+=16) { if(data[i+3]>128) points.push({x:(i/4)%canvas.width, y:Math.floor((i/4)/canvas.width)}); }
+                for(let i=0; i<particles.length; i++) {
+                    let p = points[i%points.length] || {x:Math.random()*canvas.width, y:Math.random()*canvas.height};
+                    particles[i].destX = p.x; particles[i].destY = p.y;
+                }
+            }
+
+            setShape(sequence[0]);
+            setInterval(() => { currentText = (currentText+1)%sequence.length; setShape(sequence[currentText]); }, 4000);
+
+            function draw() {
+                ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.fillRect(0,0,canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += (p.destX - p.x)*0.05; p.y += (p.destY - p.y)*0.05;
+                    ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+    </script>
+</body>
+</html>
